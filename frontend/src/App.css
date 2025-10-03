@@ -1,0 +1,108 @@
+/* --- THEME & COLOR PALETTE --- */
+/* Defines the colors for both light and dark modes */
+
+:root {
+  --background: #ffffff;
+  --surface: #f9fafb; /* Slightly off-white for cards */
+  --surface-inset: #f3f4f6; /* For inset elements like code blocks */
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --primary-accent: #6d28d9;
+  --danger-accent: #dc2626;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+[data-theme='dark'] {
+  --background: #030712; /* Near-black */
+  --surface: #111827;    /* Dark blue-gray for cards */
+  --surface-inset: #0c1322; /* For inset elements like code blocks */
+  --border: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
+  --primary-accent: #a78bfa;
+  --danger-accent: #f87171;
+}
+
+/* --- GLOBAL STYLES & FONT --- */
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+/* Ensure the Inter font is linked in your main index.html file */
+/* <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> */
+
+
+/* --- REUSABLE COMPONENT STYLES --- */
+/* Using @apply to create clean, reusable component classes */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+  outline: none;
+.btn-primary {
+  font-size: 1rem;
+  background-color: var(--text-primary);
+  color: var(--background);
+  border: none;
+}
+  box-shadow: 0 0 0 2px var(--primary-accent), 0 0 0 4px var(--background);
+}
+.btn:hover {
+  background-color: var(--surface-inset);
+  border-color: var(--text-tertiary);
+}
+
+.btn-primary {
+  font-size: 1rem;
+  background-color: var(--text-primary);
+  color: var(--background);
+  border: none;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  background-color: var(--text-primary);
+  border: none;
+}
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
+}
+.card:hover {
+  border-color: var(--primary-accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* app.css */
+/* app.css */
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.before\\:animate-typewriter::before {
+  content: '';
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--text-primary);
+  animation: typewriter 1s steps(30) forwards;
+}
