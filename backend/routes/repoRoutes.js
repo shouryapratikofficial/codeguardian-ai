@@ -62,7 +62,7 @@ router.post('/:owner/:repo/activate', isAuthenticated, async (req, res) => {
   try {
     let repository = await Repository.findOne({ githubRepoId: String(githubRepoId), owner: req.user._id });
 
-    const webhookUrl = `${process.env.NGROK_FORWARDING_URL}/api/webhooks/github`;
+const webhookUrl = `${process.env.BACKEND_URL}/api/webhooks/github`;
     const webhookSecret = process.env.WEBHOOK_SECRET;
     const hookConfig = {
       name: 'web',

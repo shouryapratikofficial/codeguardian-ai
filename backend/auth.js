@@ -57,12 +57,17 @@ router.get('/github/callback', async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
-        // Redirect to the frontend
-    res.redirect('http://localhost:5173/dashboard');
+   // OLD
+// res.redirect('http://localhost:5173/dashboard');
+
+// NEW
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+res.redirect(process.env.FRONTEND_URL + '/dashboard');
 
     } catch (error) {
         console.error('Error during GitHub OAuth callback', error);
-        res.redirect('http://localhost:5173?error=auth_failed');
+        res.redirect(process.env.FRONTEND_URL + '?error=oauth_failed'); // Redirect to frontend login with error
+
     }
 });
 

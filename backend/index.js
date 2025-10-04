@@ -21,6 +21,10 @@ app.use(express.json({
 const port = process.env.PORT || 5000;
 
 app.use(cookieParser()); // Use cookie-parser middleware
+import cors from 'cors';
+app.use(cors({
+  origin: ['https://codeguardian-ai.vercel.app'] // frontend domain
+}));
 
 app.use('/api/auth', authRouter);
 app.use('/api/repos', repoRouter); // Use the repo router
