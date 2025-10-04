@@ -22,7 +22,7 @@ const port = process.env.PORT || 5000;
 
 app.use(cookieParser()); // Use cookie-parser middleware
 import cors from 'cors';
-import cors from 'cors';
+
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true // Allow cookies to be sent
