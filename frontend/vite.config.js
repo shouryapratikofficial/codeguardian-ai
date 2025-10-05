@@ -9,7 +9,7 @@ export default defineConfig({
     proxy: {
       // Proxying API requests to the backend
       '/api': {
-        target: 'http://localhost:5000', // Your backend server URL
+        target: 'https://codeguardian-backend-1ftn.onrender.com', // Your backend server URL
         changeOrigin: true,
       },
     },
