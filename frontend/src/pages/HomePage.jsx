@@ -16,7 +16,7 @@ export default function HomePage() {
       <p className="mt-4 max-w-xl text-lg text-[var(--text-secondary)]">
         Your automated code review assistant. Activate on your repositories to get instant, AI-powered feedback on every pull request.
       </p>
-      <a href="/api/auth/github" className="mt-8">
+      <a href="https://codeguardian-backend-1ftn.onrender.com/api/auth/github" className="mt-8">
         <button className="btn btn-primary">
           <Github size={18} />
           Login with GitHub
