@@ -62,11 +62,12 @@ router.get('/github/callback', async (req, res) => {
 
 // NEW
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-res.redirect(process.env.FRONTEND_URL + '/dashboard');
+res.redirect(`${frontendUrl}/dashboard`);
 
     } catch (error) {
         console.error('Error during GitHub OAuth callback', error);
-        res.redirect(process.env.FRONTEND_URL + '?error=oauth_failed'); // Redirect to frontend login with error
+       res.redirect(`${frontendUrl}/?error=oauth_failed`);
+
 
     }
 });
