@@ -3,30 +3,35 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, LogOut, Play, Trash2, Sun, Moon } from 'lucide-react';
 
-export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
+export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activatedRepos, setActivatedRepos] = useState(new Map());
 
-
-
+  // ✅ Automatically detect correct backend URL
+  const API_BASE =
+    import.meta.env.VITE_BACKEND_URL || '';
 
   // Fetch repos
   useEffect(() => {
     console.log('Fetching repository data...');
     const fetchData = async () => {
       try {
-        
         const [allReposRes, activatedReposRes] = await Promise.all([
-          fetch('/api/repos'),
-          fetch('/api/repos/activated')
+          fetch(`${API_BASE}/api/repos`),
+          fetch(`${API_BASE}/api/repos/activated`)
         ]);
-        if (!allReposRes.ok || !activatedReposRes.ok) throw new Error('Failed to fetch repository data');
+
+        if (!allReposRes.ok || !activatedReposRes.ok)
+          throw new Error('Failed to fetch repository data');
+
         const allReposData = await allReposRes.json();
         const activatedReposData = await activatedReposRes.json();
+
         const activatedMap = new Map();
         activatedReposData.forEach(repo => activatedMap.set(repo.name, repo._id));
+
         setRepos(allReposData);
         setActivatedRepos(activatedMap);
       } catch (err) {
@@ -36,14 +41,13 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
       }
     };
     fetchData();
-  }, []);
-
+  }, [API_BASE]);
 
   // Activate
   const handleActivate = async (repoId, repoFullName) => {
     try {
       const [owner, repo] = repoFullName.split('/');
-      const res = await fetch(`/api/repos/${owner}/${repo}/activate`, {
+      const res = await fetch(`${API_BASE}/api/repos/${owner}/${repo}/activate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ githubRepoId: repoId }),
@@ -54,9 +58,9 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
       }
       const { repo: newActiveRepo } = await res.json();
       setActivatedRepos(prevMap => new Map(prevMap).set(newActiveRepo.name, newActiveRepo._id));
-      alert(`Successfully activated ${repoFullName}!`);
+      alert(`✅ Successfully activated ${repoFullName}!`);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`❌ Error: ${err.message}`);
     }
   };
 
@@ -65,7 +69,7 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
     if (!window.confirm(`Are you sure you want to deactivate ${repoFullName}?`)) return;
     try {
       const repoId = activatedRepos.get(repoFullName);
-      const res = await fetch(`/api/repos/${repoId}/deactivate`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/repos/${repoId}/deactivate`, { method: 'POST' });
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Failed to deactivate');
@@ -75,9 +79,9 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
         newMap.delete(repoFullName);
         return newMap;
       });
-      alert(`Successfully deactivated ${repoFullName}!`);
+      alert(`✅ Successfully deactivated ${repoFullName}!`);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`❌ Error: ${err.message}`);
     }
   };
 
@@ -130,7 +134,9 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
                 </div>
               ))
             ) : (
-              <div className="text-center text-[var(--text-secondary)] p-6 border rounded bg-[var(--card-bg)]">No repositories activated yet.</div>
+              <div className="text-center text-[var(--text-secondary)] p-6 border rounded bg-[var(--card-bg)]">
+                No repositories activated yet.
+              </div>
             )}
           </div>
         </section>
@@ -139,16 +145,13 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
         <section>
           <h3 className="mb-4 text-xl font-semibold text-[var(--text-secondary)]">Available Repositories</h3>
           <div className="flex flex-col gap-3">
-           {loading ? (
-  <div className="flex flex-col gap-3">
-    {[...Array(5)].map((_, i) => (
-      <div
-        key={i}
-        className="h-16 w-full rounded-lg bg-[var(--surface-inset)] animate-pulse"
-      ></div>
-    ))}
-  </div>
-)  : availableRepoList.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col gap-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-16 w-full rounded-lg bg-[var(--surface-inset)] animate-pulse"></div>
+                ))}
+              </div>
+            ) : availableRepoList.length > 0 ? (
               availableRepoList.map(repo => (
                 <div key={repo.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded bg-[var(--card-bg)] transition-colors">
                   <span className="font-semibold">{repo.full_name}</span>
@@ -161,7 +164,9 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
                 </div>
               ))
             ) : (
-              <div className="text-center text-[var(--text-secondary)] p-6 border rounded bg-[var(--card-bg)]">All available repositories are activated.</div>
+              <div className="text-center text-[var(--text-secondary)] p-6 border rounded bg-[var(--card-bg)]">
+                All available repositories are activated.
+              </div>
             )}
           </div>
         </section>
