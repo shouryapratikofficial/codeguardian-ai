@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, GitPullRequest, Github, Sun, Moon } from 'lucide-react';
-
+  const API_BASE =
+    import.meta.env.VITE_BACKEND_URL || '';
 export default function ReviewHistoryPage({ theme, toggleTheme }) {
     
   const { repoId } = useParams();
@@ -12,7 +13,7 @@ export default function ReviewHistoryPage({ theme, toggleTheme }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`/api/reviews/${repoId}`);
+        const res = await fetch(`${API_BASE}/api/reviews/${repoId}`);
         if (!res.ok) throw new Error('Failed to fetch review history.');
         setData(await res.json());
       } catch (err) {
