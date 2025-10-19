@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import ReviewHistoryPage from './pages/ReviewHistoryPage';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || '';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
