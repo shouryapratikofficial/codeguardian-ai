@@ -13,31 +13,56 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
   const API_BASE =
     import.meta.env.VITE_BACKEND_URL || '';
 
+  console.log('DashboardPage init', { user, theme, API_BASE });
+
   // Fetch repos
   useEffect(() => {
-    console.log('Fetching repository data...');
+    console.log('useEffect: starting fetchData', { API_BASE });
     const fetchData = async () => {
       try {
+        const allReposUrl = `${API_BASE}/api/repos`;
+        const activatedReposUrl = `${API_BASE}/api/repos/activated`;
+        console.log('fetchData: fetching URLs', { allReposUrl, activatedReposUrl });
+
         const [allReposRes, activatedReposRes] = await Promise.all([
-          fetch(`${API_BASE}/api/repos`),
-          fetch(`${API_BASE}/api/repos/activated`)
+          fetch(allReposUrl),
+          fetch(activatedReposUrl)
         ]);
 
-        if (!allReposRes.ok || !activatedReposRes.ok)
-          throw new Error('Failed to fetch repository data');
+        console.log('fetchData: responses received', {
+          allReposStatus: allReposRes.status,
+          activatedReposStatus: activatedReposRes.status
+        });
+
+        if (!allReposRes.ok || !activatedReposRes.ok) {
+          const errText = `Failed to fetch repository data: statuses ${allReposRes.status}, ${activatedReposRes.status}`;
+          console.error('fetchData error:', errText);
+          throw new Error(errText);
+        }
 
         const allReposData = await allReposRes.json();
         const activatedReposData = await activatedReposRes.json();
 
+        console.log('fetchData: parsed JSON', {
+          allReposCount: Array.isArray(allReposData) ? allReposData.length : typeof allReposData,
+          activatedReposCount: Array.isArray(activatedReposData) ? activatedReposData.length : typeof activatedReposData
+        });
+
         const activatedMap = new Map();
-        activatedReposData.forEach(repo => activatedMap.set(repo.name, repo._id));
+        activatedReposData.forEach(repo => {
+          activatedMap.set(repo.name, repo._id);
+          console.log('fetchData: mapping activated repo', { name: repo.name, id: repo._id });
+        });
 
         setRepos(allReposData);
         setActivatedRepos(activatedMap);
+        console.log('fetchData: state updated', { reposLength: allReposData.length, activatedSize: activatedMap.size });
       } catch (err) {
+        console.error('fetchData caught error:', err);
         setError(err.message);
       } finally {
         setLoading(false);
+        console.log('fetchData: finished, loading set to false');
       }
     };
     fetchData();
@@ -45,48 +70,98 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
 
   // Activate
   const handleActivate = async (repoId, repoFullName) => {
+    console.log('handleActivate: start', { repoId, repoFullName });
     try {
       const [owner, repo] = repoFullName.split('/');
-      const res = await fetch(`${API_BASE}/api/repos/${owner}/${repo}/activate`, {
+      const url = `${API_BASE}/api/repos/${owner}/${repo}/activate`;
+      const payload = { githubRepoId: repoId };
+      console.log('handleActivate: POST', { url, payload });
+
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ githubRepoId: repoId }),
+        body: JSON.stringify(payload),
       });
+
+      console.log('handleActivate: response status', { status: res.status });
+
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to activate');
+        let errorData;
+        try {
+          errorData = await res.json();
+        } catch (e) {
+          console.error('handleActivate: failed to parse error body', e);
+        }
+        console.error('handleActivate: server error', { errorData });
+        throw new Error((errorData && errorData.message) || 'Failed to activate');
       }
+
       const { repo: newActiveRepo } = await res.json();
-      setActivatedRepos(prevMap => new Map(prevMap).set(newActiveRepo.name, newActiveRepo._id));
+      console.log('handleActivate: activation result', { newActiveRepo });
+
+      setActivatedRepos(prevMap => {
+        const newMap = new Map(prevMap);
+        newMap.set(newActiveRepo.name, newActiveRepo._id);
+        console.log('handleActivate: activatedRepos updated', { newActiveRepoName: newActiveRepo.name, newMapSize: newMap.size });
+        return newMap;
+      });
       alert(`✅ Successfully activated ${repoFullName}!`);
     } catch (err) {
+      console.error('handleActivate caught error:', err);
       alert(`❌ Error: ${err.message}`);
     }
   };
 
   // Deactivate
   const handleDeactivate = async (repoFullName) => {
-    if (!window.confirm(`Are you sure you want to deactivate ${repoFullName}?`)) return;
+    console.log('handleDeactivate: start', { repoFullName });
+    if (!window.confirm(`Are you sure you want to deactivate ${repoFullName}?`)) {
+      console.log('handleDeactivate: user cancelled deactivation', { repoFullName });
+      return;
+    }
     try {
       const repoId = activatedRepos.get(repoFullName);
-      const res = await fetch(`${API_BASE}/api/repos/${repoId}/deactivate`, { method: 'POST' });
+      console.log('handleDeactivate: resolved repoId', { repoFullName, repoId });
+
+      const url = `${API_BASE}/api/repos/${repoId}/deactivate`;
+      console.log('handleDeactivate: POST', { url });
+
+      const res = await fetch(url, { method: 'POST' });
+
+      console.log('handleDeactivate: response status', { status: res.status });
+
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to deactivate');
+        let errorData;
+        try {
+          errorData = await res.json();
+        } catch (e) {
+          console.error('handleDeactivate: failed to parse error body', e);
+        }
+        console.error('handleDeactivate: server error', { errorData });
+        throw new Error((errorData && errorData.message) || 'Failed to deactivate');
       }
+
       setActivatedRepos(prevMap => {
         const newMap = new Map(prevMap);
         newMap.delete(repoFullName);
+        console.log('handleDeactivate: removed from activatedRepos', { repoFullName, newMapSize: newMap.size });
         return newMap;
       });
       alert(`✅ Successfully deactivated ${repoFullName}!`);
     } catch (err) {
+      console.error('handleDeactivate caught error:', err);
       alert(`❌ Error: ${err.message}`);
     }
   };
 
   const activatedRepoList = loading ? [] : repos.filter(repo => activatedRepos.has(repo.full_name));
   const availableRepoList = loading ? [] : repos.filter(repo => !activatedRepos.has(repo.full_name));
+  console.log('render: computed lists', {
+    loading,
+    reposLength: repos.length,
+    activatedRepoListLength: activatedRepoList.length,
+    availableRepoListLength: availableRepoList.length
+  });
 
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-8 min-h-screen bg-[var(--background)] text-[var(--text-primary)] transition-colors">
