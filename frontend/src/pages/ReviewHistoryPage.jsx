@@ -13,7 +13,7 @@ export default function ReviewHistoryPage({ theme, toggleTheme }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/reviews/${repoId}`);
+        const res = await fetch(`${API_BASE}/api/reviews/${repoId}` , { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to fetch review history.');
         setData(await res.json());
       } catch (err) {

@@ -25,8 +25,8 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
         console.log('fetchData: fetching URLs', { allReposUrl, activatedReposUrl });
 
         const [allReposRes, activatedReposRes] = await Promise.all([
-          fetch(allReposUrl),
-          fetch(activatedReposUrl)
+          fetch(allReposUrl , { credentials: 'include' }),
+          fetch(activatedReposUrl , { credentials: 'include' })
         ]);
 
         console.log('fetchData: responses received', {
@@ -81,6 +81,7 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        credentials: 'include'
       });
 
       console.log('handleActivate: response status', { status: res.status });
@@ -126,7 +127,7 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
       const url = `${API_BASE}/api/repos/${repoId}/deactivate`;
       console.log('handleDeactivate: POST', { url });
 
-      const res = await fetch(url, { method: 'POST' });
+      const res = await fetch(url, { method: 'POST' , credentials: 'include' });
 
       console.log('handleDeactivate: response status', { status: res.status });
 

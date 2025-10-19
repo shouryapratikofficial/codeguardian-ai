@@ -108,6 +108,7 @@ router.get('/github/callback', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
             maxAge: 24 * 60 * 60 * 1000, // 1 day
+            sameSite: 'none', // Allow cross-site cookies
         });
 
         console.log('GET /api/auth/github/callback: redirecting to frontend dashboard', { frontendUrl: `${frontendUrl}/dashboard` });
