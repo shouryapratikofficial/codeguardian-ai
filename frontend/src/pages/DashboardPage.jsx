@@ -14,6 +14,7 @@ export default function DashboardPage({ user, onLogout , theme, toggleTheme}) {
 
   // Fetch repos
   useEffect(() => {
+    console.log('Fetching repository data...');
     const fetchData = async () => {
       try {
         
