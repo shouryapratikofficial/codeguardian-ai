@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import ReviewHistoryPage from './pages/ReviewHistoryPage';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ const [theme, setTheme] = useState('light');
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('/api/auth/profile');
+        const res = await fetch(`${API_BASE_URL}/api/auth/profile`, { credentials: 'include' });
         if (res.ok) {
           const userData = await res.json();
           setUser(userData);
@@ -41,7 +41,7 @@ const [theme, setTheme] = useState('light');
   }, []);
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
     setUser(null);
     navigate('/');
   };
