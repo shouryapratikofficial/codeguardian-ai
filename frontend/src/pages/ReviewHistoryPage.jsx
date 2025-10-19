@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, GitPullRequest, Github, Sun, Moon } from 'lucide-react';
   const API_BASE =
-    import.meta.env.VITE_BACKEND_URL || '';
+     'https://codeguardian-backend-1ftn.onrender.com';
 export default function ReviewHistoryPage({ theme, toggleTheme }) {
     
   const { repoId } = useParams();

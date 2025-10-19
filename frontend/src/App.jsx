@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import ReviewHistoryPage from './pages/ReviewHistoryPage';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || '';
+const API_BASE_URL = 'https://codeguardian-backend-1ftn.onrender.com';
 
 function App() {
   const [user, setUser] = useState(null);

@@ -11,7 +11,7 @@ export default function DashboardPage({ user, onLogout, theme, toggleTheme }) {
 
   // ✅ Automatically detect correct backend URL
   const API_BASE =
-    import.meta.env.VITE_BACKEND_URL || '';
+    'https://codeguardian-backend-1ftn.onrender.com';
 
   console.log('DashboardPage init', { user, theme, API_BASE });
 
